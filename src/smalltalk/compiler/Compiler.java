@@ -1,10 +1,14 @@
 package smalltalk.compiler;
 
+import org.antlr.runtime.*;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.VariableSymbol;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import smalltalk.compiler.symbols.STArg;
 import smalltalk.compiler.symbols.STBlock;
@@ -39,11 +43,20 @@ public class Compiler {
 	}
 
 	public STSymbolTable compile(String fileName, String input) {
+		//modify
+		ParserRuleContext tree = parseClasses(new ANTLRInputStream(input));
+		if ( tree!=null ) {
+			defSymbols(tree);
+			resolveSymbols(tree);
+			CodeGenerator gen = new CodeGenerator(this);
+			gen.visit(tree);
+		}
 		return symtab;
 	}
 
-	/** Parse classes and/or a chunk of code, returning AST root.
-	 *  Return null upon syntax error.
+	/**
+	 * Parse classes and/or a chunk of code, returning AST root.
+	 * Return null upon syntax error.
 	 */
 	public ParserRuleContext parseClasses(CharStream input) {
 		SmalltalkLexer l = new SmalltalkLexer(input);
@@ -51,10 +64,10 @@ public class Compiler {
 		//System.out.println(tokens.getTokens());
 
 		this.parser = new SmalltalkParser(tokens);
-		fileTree= parser.file();
+		fileTree = parser.file();
 
 		//System.out.println(((Tree)r.getTree()).toStringTree());
-		if ( parser.getNumberOfSyntaxErrors()>0 ) return null;
+		if (parser.getNumberOfSyntaxErrors() > 0) return null;
 		return fileTree;
 	}
 
@@ -72,14 +85,19 @@ public class Compiler {
 		walker.walk(def, tree);
 	}
 
+	public void generateCode(ParserRuleContext tree){
+		CodeGenerator codeGenerator = new CodeGenerator(this);
+		Code code = codeGenerator.visit(tree);
+		//?
+    }
 	public STBlock createBlock(STMethod currentMethod, ParserRuleContext tree) {
 //		System.out.println("create block in "+currentMethod+" "+args);
-		return null;
+		return new STBlock(currentMethod,tree);
 	}
 
 	public STMethod createMethod(String selector, ParserRuleContext tree) {
 //		System.out.println("	create method "+selector+" "+args);
-		return null;
+		return new STMethod(selector,tree);
 	}
 
 	public STPrimitiveMethod createPrimitiveMethod(STClass currentClass,

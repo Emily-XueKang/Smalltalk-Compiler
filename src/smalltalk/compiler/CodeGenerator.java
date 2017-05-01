@@ -69,10 +69,24 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return code;
 	}
 
+//	@Override
+//	public Code visitNamedMethod(SmalltalkParser.NamedMethodContext ctx) {
+//		currentScope = ctx.scope;
+//		pushScope(ctx.scope);
+//		String methodName = ctx.getText();
+//
+//		popScope();
+//		currentScope = null;
+//
+//	}
+
+
+
 	public STCompiledBlock getCompiledPrimitive(STPrimitiveMethod primitive) {
 		STCompiledBlock compiledMethod = new STCompiledBlock(currentClassScope, primitive);
 		return compiledMethod;
 	}
+
 
 	/**
 	 All expressions have values. Must pop each expression value off, except

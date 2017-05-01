@@ -2,7 +2,10 @@ package smalltalk.compiler.symbols;
 
 import org.antlr.symtab.MethodSymbol;
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.List;
 
 /** A block is an anonymous method defined within a method or another block.
  *  Ala gnu impl., blocks aren't stored en masse inline.
@@ -58,9 +61,17 @@ public class STBlock extends MethodSymbol {
 
 	public boolean isMethod() { return false; }
 
-	public int nargs() { return 0; } // fill in
+	public int nargs() {
+		List<STArg> args = (List<STArg>) this.getScope().getSymbols();
+		return args.size();
+		//return 0; } // fill in
+	}
 
-	public int nlocals() { return 0; } // fill in
+	public int nlocals() {
+		List<STVariable> locals = (List<STVariable>) this.getScope().getSymbols();
+		return locals.size();
+	}
+	//return 0; } // fill in
 
 	/** Given the name of a local variable or argument, return the index from 0.
 	 *  The arguments come first and then the locals. For example,
@@ -69,7 +80,17 @@ public class STBlock extends MethodSymbol {
 	 */
 	public int getLocalIndex(String name) {
 		// fill in
-		return 0;
+		if(resolve(name) instanceof STVariable){
+			List<STVariable> locals = (List<STVariable>) this.getScope().getSymbols();
+			int localindex = locals.indexOf(resolve(name));
+			return this.nargs() + localindex;
+		}
+		if(resolve(name) instanceof STArg){
+			List<STArg> args = (List<STArg>) this.getScope().getSymbols();
+			int argindex = args.indexOf(resolve(name));
+			return argindex;
+		}
+		else return 0;
 	}
 
 	/** Look for name in current block; keep looking upwards in
@@ -78,6 +99,27 @@ public class STBlock extends MethodSymbol {
 	 */
 	public int getRelativeScopeCount(String name) {
 		// fill in
-		return 0;
+		if(this.resolve(name) == null){
+			return -1;
+		}
+		else {
+			int count = 0;
+			int found = 0;
+			Scope currentscope = this;
+			Symbol symbol = currentscope.getSymbol(name);
+			if (symbol != null) {
+				return 0;
+			} else {
+				List<Scope> scopes = this.getEnclosingPathToRoot();
+				for (Scope scope_i : scopes) {
+					count++;
+					symbol = scope_i.getSymbol(name);
+					if (symbol == null) {
+						found++;
+					}
+				}
+				return count - found + 1;
+			}
+		}
 	}
 }
