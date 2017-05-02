@@ -51,6 +51,7 @@ public class Compiler {
 			resolveSymbols(tree);
 			CodeGenerator gen = new CodeGenerator(this);
 			gen.visit(tree);
+			generateCode(tree);
 		}
 		return symtab;
 	}
@@ -81,16 +82,16 @@ public class Compiler {
 	}
 
 	public void resolveSymbols(ParserRuleContext tree) {
-		ResolveSymbols def = new ResolveSymbols(this);
+		ResolveSymbols res = new ResolveSymbols(this);
 		ParseTreeWalker walker = new ParseTreeWalker();
-		walker.walk(def, tree);
+		walker.walk(res, tree);
 	}
 
 	public void generateCode(ParserRuleContext tree){
 		CodeGenerator codeGenerator = new CodeGenerator(this);
 		Code code = codeGenerator.visit(tree);
-		//?
-    }
+		//System.out.println("code with generateCode: " + code);
+	}
 	public STBlock createBlock(STMethod currentMethod, ParserRuleContext tree) {
 //		System.out.println("create block in "+currentMethod+" "+args);
 		return new STBlock(currentMethod,tree);
