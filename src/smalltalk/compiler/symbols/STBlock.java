@@ -62,16 +62,13 @@ public class STBlock extends MethodSymbol {
 	public boolean isMethod() { return false; }
 
 	public int nargs() {
-		List<STArg> args = (List<STArg>) this.getScope().getSymbols();
-		return args.size();
-		//return 0; } // fill in
+		return getNumberOfParameters();
 	}
 
 	public int nlocals() {
-		List<STVariable> locals = (List<STVariable>) this.getScope().getSymbols();
-		return locals.size();
+		return getNumberOfVariables();
 	}
-	//return 0; } // fill in
+
 
 	/** Given the name of a local variable or argument, return the index from 0.
 	 *  The arguments come first and then the locals. For example,

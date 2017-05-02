@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import smalltalk.compiler.misc.Utils;
 import smalltalk.compiler.symbols.STArg;
 import smalltalk.compiler.symbols.STBlock;
 import smalltalk.compiler.symbols.STClass;
@@ -108,7 +109,8 @@ public class Compiler {
 //		System.out.println("	create primitive "+selector+" "+args+"->"+primitiveName);
 		// convert "<classname>_<methodname>" Primitive value
 		// warn if classname!=currentClass
-		return null;
+		return new STPrimitiveMethod(selector,tree,primitiveName);
+		//return null;
 	}
 
 
@@ -142,7 +144,26 @@ public class Compiler {
 
 	public static Code push_nil() 				{ return Code.of(Bytecode.NIL); }
 	public static Code push_self()				{ return Code.of(Bytecode.SELF); }
+	public static Code push_true() 				{ return Code.of(smalltalk.vm.Bytecode.TRUE);}
+	public static Code push_false() 			{ return Code.of(smalltalk.vm.Bytecode.FALSE);}
+
+	public static Code push_char(int c)			{ return Code.of(smalltalk.vm.Bytecode.PUSH_CHAR).join(Utils.shortToBytes(c));}
+	public static Code push_int(int n) 			{ return Code.of(smalltalk.vm.Bytecode.PUSH_INT).join(Utils.intToBytes(n));}
+	public static Code push_float(float n) 		{ return Code.of(smalltalk.vm.Bytecode.PUSH_FLOAT).join(Utils.floatToBytes(n));}
+	public static Code push_field(int i)		{ return Code.of(smalltalk.vm.Bytecode.PUSH_FIELD).join(Utils.shortToBytes(i));}
+	public static Code push_local(int d, int i)	{ return Code.of(smalltalk.vm.Bytecode.PUSH_LOCAL).join(Utils.shortToBytes(d)).join(Utils.shortToBytes(i));}
+	public static Code push_literal(int i)		{ return Code.of(smalltalk.vm.Bytecode.PUSH_LITERAL).join(Utils.toLiteral(i));}
+	public static Code push_global(int i)		{ return Code.of(smalltalk.vm.Bytecode.PUSH_GLOBAL).join(Utils.toLiteral(i));}
+	public static Code push_array(int n) 		{ return Code.of(smalltalk.vm.Bytecode.PUSH_ARRAY).join(Utils.shortToBytes(n));}
+	public static Code store_field(int i)		{ return Code.of(smalltalk.vm.Bytecode.STORE_FIELD).join(Utils.shortToBytes(i));}
+	public static Code store_local(int d, int i){ return Code.of(smalltalk.vm.Bytecode.STORE_LOCAL).join(Utils.shortToBytes(d)).join(Utils.shortToBytes(i));}
+	public static Code pop() 					{ return Code.of(smalltalk.vm.Bytecode.POP);}
+	public static Code send(int d, int i) 		{ return Code.of(smalltalk.vm.Bytecode.SEND).join(Utils.shortToBytes(d)).join(Utils.toLiteral(i));}
+	public static Code send_super(int d, int i) { return Code.of(smalltalk.vm.Bytecode.SEND_SUPER).join(Utils.shortToBytes(d)).join(Utils.toLiteral(i));}
+	public static Code block(int i ) 			{ return Code.of(smalltalk.vm.Bytecode.BLOCK).join(Utils.shortToBytes(i));}
+	public static Code block_return() 			{ return Code.of(smalltalk.vm.Bytecode.BLOCK_RETURN);}
 	public static Code method_return()          { return Code.of(Bytecode.RETURN); }
+
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;
