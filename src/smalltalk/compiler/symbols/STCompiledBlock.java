@@ -105,7 +105,9 @@ public class STCompiledBlock {
 		isClassMethod = blk instanceof STMethod && ((STMethod) blk).isClassMethod;
 	}
 
-	public String toTestString() { return getAsString(); }
+	public String toTestString() {
+		System.out.println("getasstring: " + getAsString());
+		return getAsString(); }
 
 	/** Return a JSON object with all relevant info about a ST block/method,
 	 *  which is wrapped in the JSON for an ST class via {@link STClass#serialize()}.
@@ -149,7 +151,8 @@ public class STCompiledBlock {
 		template.add("bytecode", bytecode);
 		template.add("assembly", Bytecode.disassemble(this.name, this.bytecode, enclosingClass.stringTable.toArray(), 0));
 		template.add("nblocks", blocks!=null ? blocks.length : 0);
-        template.add("blocks", Utils.map(blocks, STCompiledBlock::toTestString));
+		System.out.println("blocks in getasstring: "+ blocks);
+		template.add("blocks", Utils.map(blocks, STCompiledBlock::toTestString));
 		return template.render();
 	}
 
