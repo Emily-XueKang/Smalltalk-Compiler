@@ -62,11 +62,11 @@ public class STBlock extends MethodSymbol {
 	public boolean isMethod() { return false; }
 
 	public int nargs() {
-		return getNumberOfParameters();
+		return this.getNumberOfParameters();
 	}
 
 	public int nlocals() {
-		return getNumberOfVariables();
+		return this.getNumberOfVariables();
 	}
 
 
@@ -77,14 +77,17 @@ public class STBlock extends MethodSymbol {
 	 */
 	public int getLocalIndex(String name) {
 		// fill in
-		if(resolve(name) instanceof STVariable){
-			List<STVariable> locals = (List<STVariable>) this.getScope().getSymbols();
-			int localindex = locals.indexOf(resolve(name));
+		Symbol sym = this.resolve(name);
+		if(sym instanceof STVariable){
+			List<STVariable> locals = (List<STVariable>) this.getSymbols();
+			int localindex = locals.indexOf(sym);
+			System.out.println("localindex of : " + name + " is "+ localindex);
 			return this.nargs() + localindex;
 		}
-		if(resolve(name) instanceof STArg){
-			List<STArg> args = (List<STArg>) this.getScope().getSymbols();
+		else if(sym instanceof STArg){
+			List<STArg> args = (List<STArg>) this.getSymbols();
 			int argindex = args.indexOf(resolve(name));
+			System.out.println("localindex of : " + name + " is "+ argindex);
 			return argindex;
 		}
 		else return 0;
@@ -94,8 +97,12 @@ public class STBlock extends MethodSymbol {
 	 *  enclosingScope until found; return how many scopes we had to
 	 *  jump to find name. 0 indicates same scope.
 	 */
+
+
+
 	public int getRelativeScopeCount(String name) {
 		// fill in
+
 		if(this.resolve(name) == null){
 			return -1;
 		}
@@ -103,14 +110,14 @@ public class STBlock extends MethodSymbol {
 			int count = 0;
 			int found = 0;
 			Scope currentscope = this;
-			Symbol symbol = currentscope.getSymbol(name);
+			Symbol symbol = currentscope.resolve(name);
 			if (symbol != null) {
 				return 0;
 			} else {
 				List<Scope> scopes = this.getEnclosingPathToRoot();
 				for (Scope scope_i : scopes) {
 					count++;
-					symbol = scope_i.getSymbol(name);
+					symbol = scope_i.resolve(name);
 					if (symbol == null) {
 						found++;
 					}

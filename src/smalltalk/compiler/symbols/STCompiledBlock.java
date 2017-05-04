@@ -151,7 +151,6 @@ public class STCompiledBlock {
 		template.add("bytecode", bytecode);
 		template.add("assembly", Bytecode.disassemble(this.name, this.bytecode, enclosingClass.stringTable.toArray(), 0));
 		template.add("nblocks", blocks!=null ? blocks.length : 0);
-		System.out.println("blocks in getasstring: "+ blocks);
 		template.add("blocks", Utils.map(blocks, STCompiledBlock::toTestString));
 		return template.render();
 	}

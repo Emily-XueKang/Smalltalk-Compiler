@@ -44,14 +44,11 @@ public class Compiler {
 	}
 
 	public STSymbolTable compile(String fileName, String input) {
-		//modify
 		ParserRuleContext tree = parseClasses(new ANTLRInputStream(input));
 		if ( tree!=null ) {
 			defSymbols(tree);
 			resolveSymbols(tree);
-			CodeGenerator gen = new CodeGenerator(this);
-			gen.visit(tree);
-			generateCode(tree);
+			codeGenerate(tree);
 		}
 		return symtab;
 	}
@@ -87,10 +84,9 @@ public class Compiler {
 		walker.walk(res, tree);
 	}
 
-	public void generateCode(ParserRuleContext tree){
-		CodeGenerator codeGenerator = new CodeGenerator(this);
-		Code code = codeGenerator.visit(tree);
-		//System.out.println("code with generateCode: " + code);
+	public void codeGenerate(ParserRuleContext ctx){
+		CodeGenerator gen = new CodeGenerator(this);
+		gen.visit(ctx);
 	}
 	public STBlock createBlock(STMethod currentMethod, ParserRuleContext tree) {
 //		System.out.println("create block in "+currentMethod+" "+args);
