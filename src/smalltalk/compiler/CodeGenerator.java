@@ -280,17 +280,17 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 //		return code;
 //	}
 //
-//	@Override
-//	public Code visitBinaryExpression(SmalltalkParser.BinaryExpressionContext ctx) {
-//		Code code = visit(ctx.unaryExpression(0));
-//		if(ctx.bop() != null){
-//			for (int i = 0; i < ctx.bop().size(); i++){
-//				code.join(visit(ctx.unaryExpression(i + 1)));
-//				code.join(visit(ctx.bop(i)));
-//			}
-//		}
-//		return code;
-//	}
+	@Override
+	public Code visitBinaryExpression(SmalltalkParser.BinaryExpressionContext ctx) {
+		Code code = visit(ctx.unaryExpression(0));
+		if(ctx.bop() != null){
+			for (int i = 0; i < ctx.bop().size(); i++){
+				code.join(visit(ctx.unaryExpression(i + 1)));
+				code.join(visit(ctx.bop(i)));
+			}
+		}
+		return code;
+	}
 
 
 	@Override
@@ -442,17 +442,17 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
 	public int getLiteralIndex(String s)
 	{
-		StringTable strtable = stringTableMap.get(currentScope);
-		if(strtable == null){
-			strtable = new StringTable();
-		}
-		if(s.contains("\'")){
-			s = s.replace("\'","");
-		}
-		int literalIndex = strtable.add(s);
-		stringTableMap.put(currentScope, strtable);
-		return literalIndex;
-		//return 0;
+//		StringTable strtable = stringTableMap.get(currentScope);
+//		if(strtable == null){
+//			strtable = new StringTable();
+//		}
+//		if(s.contains("\'")){
+//			s = s.replace("\'","");
+//		}
+//		int literalIndex = strtable.add(s);
+//		stringTableMap.put(currentScope, strtable);
+//		return literalIndex;
+		return currentClassScope.stringTable.add(s);
 	}
 
 	private int getIndexField(String varName){
