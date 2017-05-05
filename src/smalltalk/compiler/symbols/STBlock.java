@@ -66,7 +66,7 @@ public class STBlock extends MethodSymbol {
 	}
 
 	public int nlocals() {
-		return this.getNumberOfVariables();
+		return this.getNumberOfVariables() - nargs();
 	}
 
 
@@ -101,7 +101,6 @@ public class STBlock extends MethodSymbol {
 
 
 	public int getRelativeScopeCount(String name) {
-		// fill in
 
 		if(this.resolve(name) == null){
 			return -1;
