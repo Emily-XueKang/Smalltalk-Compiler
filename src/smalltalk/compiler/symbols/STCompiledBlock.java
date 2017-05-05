@@ -106,7 +106,7 @@ public class STCompiledBlock {
 	}
 
 	public String toTestString() {
-		System.out.println("getasstring: " + getAsString());
+		//System.out.println("getasstring: " + getAsString());
 		return getAsString(); }
 
 	/** Return a JSON object with all relevant info about a ST block/method,
