@@ -199,24 +199,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	public Code visitBlock(SmalltalkParser.BlockContext ctx) {
 		pushScope(ctx.scope);
 		STBlock block = ctx.scope;
-//		Code blockcode = visitChildren(ctx);
-//		if(ctx.body() instanceof SmalltalkParser.EmptyBodyContext) {
-//			blockcode = blockcode.join(Compiler.push_nil());
-//		}
-//		blockcode = blockcode.join(Compiler.block_return());
-//
-//		ctx.scope.compiledBlock = new STCompiledBlock(currentClassScope,block);
-//		ctx.scope.compiledBlock.bytecode = blockcode.bytes();
-//
-//		Scope methodScope = currentScope.getEnclosingScope();
-//		while(!(methodScope instanceof STMethod)){
-//		    methodScope = methodScope.getEnclosingScope();
-//        }
-//        //STCompiledBlock methodCBlock = new STCompiledBlock(currentClassScope, (STBlock) methodScope);
-//        System.out.println("block index : "+ block.index);
-//        System.out.println("methodblock has compiledblock.blocks? " + ((STMethod) methodScope).compiledBlock.blocks);
-//        ((STBlock)methodScope).compiledBlock.blocks[block.index] = ctx.scope.compiledBlock;
-//
 
 		Code code = Compiler.block(ctx.scope.index);
 		Code bodycode = visitChildren(ctx);
@@ -237,7 +219,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         System.out.println("methodblock has compiledblock.blocks? " + ((STMethod) methodScope).compiledBlock.blocks);
         ((STBlock)methodScope).compiledBlock.blocks[block.index] = ctx.scope.compiledBlock;
 
-
 		popScope();
 		return code;
 
@@ -256,7 +237,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		}
 		code = code.join(Compiler.push_self());
 		code = code.join(Compiler.method_return());
-
 		//STMethod method = (STMethod) currentScope.resolve(ctx.selector);
 		//methodContext.scope.compiledBlock = new STCompiledBlock(currentClassScope,method);
 		methodContext.scope.compiledBlock = new STCompiledBlock(currentClassScope,methodContext.scope);
@@ -350,8 +330,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 //			keyword.append(keywords.get(i).getText());
 //			args.join(visit(binaries.get(i + 1))); //binaries[0] is dedicated to receiver
 //		}
-//
-//
 //		Code send_super = Compiler.send_super(0,getLiteralIndex(ctx.getText()));
 //		Code code = self.join(args).join(send_super);
 //		return code;
@@ -434,9 +412,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 			code = visitChildren(ctx);
 		}
 		return code;
-//		Code receiverCode = code.join(visit(ctx.recv));
-//		Code code1 = sendKeywordMsg(ctx.recv,receiverCode,ctx.args,ctx.KEYWORD());
-//		return code1;
 	}
 
 	@Override
