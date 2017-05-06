@@ -4,7 +4,6 @@ import org.antlr.symtab.MethodSymbol;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.ParserRuleContext;
-import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 import java.util.List;
 
@@ -82,14 +81,11 @@ public class STBlock extends MethodSymbol {
 		if(sym instanceof STVariable){
 			List<STVariable> locals = (List<STVariable>) this.getSymbols();
 			int localindex = locals.indexOf(sym);
-			//System.out.println("localindex of : " + name + " is "+ localindex);
-			//return this.nargs() + localindex;
 			return localindex;
 		}
 		else if(sym instanceof STArg){
 			List<STArg> args = (List<STArg>) this.getSymbols();
 			int argindex = args.indexOf(resolve(name));
-			//System.out.println("localindex of : " + name + " is "+ argindex);
 			return argindex;
 		}
 		else return 0;
@@ -111,7 +107,6 @@ public class STBlock extends MethodSymbol {
 			delta+=1;
 			currenntscope = currenntscope.getEnclosingScope();
 			var = currenntscope.getSymbol(name);
-			System.out.println("delta: " + delta);
 		}
 		return delta;
 	}

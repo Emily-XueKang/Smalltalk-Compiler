@@ -6,12 +6,8 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import smalltalk.compiler.symbols.*;
 import smalltalk.compiler.symbols.STCompiledBlock;
-import smalltalk.vm.primitive.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Fill STBlock, STMethod objects in Symbol table with bytecode,
  * {@link STCompiledBlock}.
@@ -66,7 +62,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		code = code.join(Compiler.pop());
 		code = code.join(Compiler.push_self());
 		code = code.join(Compiler.method_return());
-		//currentClassScope = (STClass)ctx.scope.getSuperClassScope();
 		popScope();
 		return code;
 	}
@@ -149,7 +144,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	@Override
 	public Code visitKeywordMethod(SmalltalkParser.KeywordMethodContext ctx) {
 		pushScope(ctx.scope);
-		//Code code = visit(ctx.methodBlock());
 		Code code = visitChildren(ctx);
 		ctx.scope.compiledBlock = new STCompiledBlock(currentClassScope,ctx.scope);
 		ctx.scope.compiledBlock.bytecode = code.bytes();
@@ -177,14 +171,11 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 			for(Scope blocki: currentScope.getNestedScopedSymbols()){
 				if(blocki instanceof STBlock){
 					stblocks[i] = ((STBlock) blocki).compiledBlock;
-					System.out.println("stblocks_i " + stblocks[i]);
 					stblocks[i].bytecode = ((STBlock) blocki).compiledBlock.bytecode;
-					System.out.println("stblocks_i bytecode: "+stblocks[i].bytecode);
 					i+=1;
 				}
 			}
 			methodContext.scope.compiledBlock.blocks = stblocks;
-			//methodContext.scope.compiledBlock.bytecode = code.bytes();
 
 			popScope();
 			return code;
@@ -209,20 +200,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		bodycode = bodycode.join(Compiler.block_return());
 
 		block.compiledBlock = new STCompiledBlock(currentClassScope,block);
-		block.compiledBlock.blocks = new STCompiledBlock[block.numNestedBlocks];//new
-
-//new start
-		int i = 0;
-		if(block.numNestedBlocks > 0){
-			for(Scope blocki: currentScope.getNestedScopedSymbols()){
-				if(blocki instanceof STBlock){
-					block.compiledBlock.blocks[i] = ((STBlock) blocki).compiledBlock;
-					block.compiledBlock.blocks[i].bytecode = ((STBlock) blocki).compiledBlock.bytecode;
-					i+=1;
-				}
-			}
-		}
-//new end
 		block.compiledBlock.bytecode = bodycode.bytes();
 
 		Scope methodScope = currentScope.getEnclosingScope();
@@ -230,12 +207,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 			methodScope = methodScope.getEnclosingScope();
 		}
 		((STBlock)methodScope).compiledBlock.blocks[block.index] = block.compiledBlock;
-		//((STBlock)methodScope).compiledBlock.blocks[block.index].bytecode = block.compiledBlock.bytecode;
-
 
 		popScope();
 		return code;
-		//return aggregateResult(code,bodycode);
 	}
 
 	@Override
@@ -263,7 +237,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return code;
 	}
 
-//List<STBlock> l = find block desecndents; blocks = [x.compiledblk for x in l]
 
 	@Override
 	public Code visitAssign(SmalltalkParser.AssignContext ctx) {
@@ -366,13 +339,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return code;
 	}
 
-//	@Override
-//	public Code visitArray(SmalltalkParser.ArrayContext ctx) {
-//		Code code = visitChildren(ctx);
-//		code = code.join(Compiler.push_array(ctx.messageExpression().size()));
-//		return code;
-//	}
-
 	@Override
 	public Code visitLiteral(SmalltalkParser.LiteralContext ctx) {
 		Code code = new Code();
@@ -412,8 +378,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		code.join(visit(ctx.binaryExpression()));
 		return code;
 	}
-
-
 
 	@Override
 	public Code visitReturn(SmalltalkParser.ReturnContext ctx) {
