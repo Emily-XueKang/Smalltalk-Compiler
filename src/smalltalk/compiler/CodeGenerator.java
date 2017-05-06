@@ -319,7 +319,10 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 			code = visitChildren(ctx);
 		}
 		return code;
+//		Code reciverCode = visit(ctx.recv);
+//		return sendKeywordMsg(ctx.recv, reciverCode, ctx.binaryExpression(),ctx.KEYWORD());
 	}
+
 
 	@Override
 	public Code visitPrimary(SmalltalkParser.PrimaryContext ctx) {
@@ -495,30 +498,13 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
 
 
+
 	public Code sendKeywordMsg(ParserRuleContext receiver,
 							   Code receiverCode,
 							   List<SmalltalkParser.BinaryExpressionContext> args,
 							   List<TerminalNode> keywords)
 	{
-		Code code = receiverCode;
-		// push all args
-		for (SmalltalkParser.BinaryExpressionContext binaryExpressionContext : args) {
-			Code elCode = visit(binaryExpressionContext);
-			code = code.join(elCode);
-		}
-		// compute selector and generate message send
-		String selector = Utils.join(Utils.map(keywords, TerminalNode::getText), "");
-		int literalIndex = getLiteralIndex(selector);
-		Code send;
-		if (receiver instanceof TerminalNode && receiver.getStart().getType()==SmalltalkParser.SUPER ) {
-				send = Compiler.send_super(args.size(), literalIndex);
-		}
-		else {
-			send = Compiler.send(args.size(), literalIndex);
-		}
-		code = code.join(send);
-		return code;
-		//return null;
+		return null;
 	}
 
 	public String getProgramSourceForSubtree(ParserRuleContext ctx)
