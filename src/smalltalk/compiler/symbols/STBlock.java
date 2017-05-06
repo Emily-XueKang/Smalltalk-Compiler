@@ -81,13 +81,14 @@ public class STBlock extends MethodSymbol {
 		if(sym instanceof STVariable){
 			List<STVariable> locals = (List<STVariable>) this.getSymbols();
 			int localindex = locals.indexOf(sym);
-			System.out.println("localindex of : " + name + " is "+ localindex);
-			return this.nargs() + localindex;
+			//System.out.println("localindex of : " + name + " is "+ localindex);
+			//return this.nargs() + localindex;
+			return localindex;
 		}
 		else if(sym instanceof STArg){
 			List<STArg> args = (List<STArg>) this.getSymbols();
 			int argindex = args.indexOf(resolve(name));
-			System.out.println("localindex of : " + name + " is "+ argindex);
+			//System.out.println("localindex of : " + name + " is "+ argindex);
 			return argindex;
 		}
 		else return 0;
@@ -98,10 +99,7 @@ public class STBlock extends MethodSymbol {
 	 *  jump to find name. 0 indicates same scope.
 	 */
 
-
-
 	public int getRelativeScopeCount(String name) {
-
 		if(this.resolve(name) == null){
 			return -1;
 		}
