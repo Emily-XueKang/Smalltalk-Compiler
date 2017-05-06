@@ -4,6 +4,7 @@ import org.antlr.symtab.MethodSymbol;
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 import java.util.List;
 
@@ -100,27 +101,18 @@ public class STBlock extends MethodSymbol {
 	 */
 
 	public int getRelativeScopeCount(String name) {
-		if(this.resolve(name) == null){
-			return -1;
+		Scope currenntscope = this;
+		Symbol var = currenntscope.getSymbol(name);
+		int delta = 0;
+		if(var != null){
+			delta = 0;
 		}
-		else {
-			int count = 0;
-			int found = 0;
-			Scope currentscope = this;
-			Symbol symbol = currentscope.resolve(name);
-			if (symbol != null) {
-				return 0;
-			} else {
-				List<Scope> scopes = this.getEnclosingPathToRoot();
-				for (Scope scope_i : scopes) {
-					count++;
-					symbol = scope_i.resolve(name);
-					if (symbol == null) {
-						found++;
-					}
-				}
-				return count - found + 1;
-			}
+		while(var == null){
+			delta+=1;
+			currenntscope = currenntscope.getEnclosingScope();
+			var = currenntscope.getSymbol(name);
+			System.out.println("delta: " + delta);
 		}
+		return delta;
 	}
 }

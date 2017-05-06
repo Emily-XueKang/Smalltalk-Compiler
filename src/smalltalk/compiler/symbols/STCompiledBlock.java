@@ -103,6 +103,14 @@ public class STCompiledBlock {
 			primitiveName = null;
 		}
 		isClassMethod = blk instanceof STMethod && ((STMethod) blk).isClassMethod;
+
+		if(blk.isMethod()){
+			int nestedblks = blk.getAllNestedScopedSymbols().size();
+			blocks = new STCompiledBlock[nestedblks];
+			for(STBlock b: blk.getAllNestedScopedSymbols().toArray(new STBlock[nestedblks])){
+				blocks[b.index] = b.compiledBlock;
+			}
+		}
 	}
 
 	public String toTestString() {

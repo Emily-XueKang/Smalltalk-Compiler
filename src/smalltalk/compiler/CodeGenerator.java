@@ -452,105 +452,51 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		return currentClassScope.stringTable.add(s);
 	}
 
-//	private int getIndexField(String varName){
-//		int i = 0;
-//		Object[] fields = currentClassScope.getFields().toArray();
-//		for(int j = 0; j < fields.length; j++){
-//			if (fields[j].toString().contains(varName)){
-//				i = j;
-//			}
-//		}
-//		return i;
-//	}
-//
-//	private int getDeltaValue(Symbol var){
-//		Scope scope = var.getScope();
-//		Scope cScope = currentScope;
-//		int delta = 0;
-//		while (cScope != scope){
-//			delta++;
-//			cScope = cScope.getEnclosingScope();
-//		}
-//		return delta;
-//	}
 
 	public Code store(String id) {
 		STBlock scope = (STBlock)currentScope;
 		Symbol symbol = scope.resolve(id);
 		if ( symbol==null ) return Code.None;
-		if ( symbol.getScope() instanceof STBlock ) { // arg or local
+		if ( symbol.getScope() instanceof STBlock ) {
 			STBlock methodScope = (STBlock)symbol.getScope();
 			int delta = scope.getRelativeScopeCount(id);
 			int litindex = methodScope.getLocalIndex(id);
 			return Compiler.store_local(delta, litindex);
 		}
 		else if ( symbol.getScope() instanceof STClass ) {
-			STClass fieldClass = (STClass)symbol.getScope();
-			int fieldIndex = fieldClass.getFieldIndex(id);
+			STClass field_in_Class = (STClass)symbol.getScope();
+			int fieldIndex = field_in_Class.getFieldIndex(id);
 			return Compiler.store_field(fieldIndex);
 		}
 		return Code.None;
 	}
 
-//	public Code store(String id) {
-//
-//		Symbol var = currentScope.resolve(id);
-//
-//		if (var instanceof STField){
-//			int i = var.getInsertionOrderNumber();
-//			return Compiler.store_field(i);
-//		} else if (var instanceof STVariable || var instanceof STArg)	{
-//			int i = var.getInsertionOrderNumber();
-//			int d = getDeltaValue(var);		// this is the delta from current scope to var.scope
-//			return Compiler.store_local(d, i);
-//		}
-//		return Code.None;
-//	}
-
-
-//	public Code push(String id) {
-//		Symbol var = currentScope.resolve(id);
-//		if(var != null) {
-//			if (var instanceof STField) {
-//				int i = getIndexField(var.getName());
-//				return Compiler.push_field(i);
-//			} else if ((var instanceof STVariable) || (var instanceof STArg)) {
-//				int i = var.getInsertionOrderNumber();
-//				int d = getDeltaValue(var);
-//				return Compiler.push_local(d, i);
-//			} else if (var instanceof STClass){
-//				return Compiler.push_global(getLiteralIndex(var.getName()));
-//			}
-//		} else{
-//			return Compiler.push_global(getLiteralIndex(id));
-//		}
-//		return Code.None;
-//	}
-
 	public Code push(String id) {
 		Scope scope = currentScope;
-		Symbol sym = scope.resolve(id);
-		if ( sym!=null && sym.getScope() instanceof STClass ) {
-			STClass clazz = (STClass)sym.getScope();
-			ClassSymbol superClassScope = clazz.getSuperClassScope();
-			int numInheritedFields = 0;
-			if ( superClassScope!=null ) {
-				numInheritedFields = superClassScope.getNumberOfFields();
+		Symbol var = scope.resolve(id);
+		if(var != null) {
+			if (var instanceof STField) {
+				int i = 0;
+				Object[] fields = currentClassScope.getFields().toArray();
+				for(int j = 0; j < fields.length; j++){
+					if (fields[j].toString().contains(id)){
+						i = j;
+					}
+				}
+				return Compiler.push_field(i);
+			} else if ((var instanceof STVariable) || (var instanceof STArg)) {
+				int i = var.getInsertionOrderNumber();
+				int d = ((STBlock)scope).getRelativeScopeCount(id);
+				return Compiler.push_local(d, i);
+			} else if (var instanceof STClass){
+				return Compiler.push_global(getLiteralIndex(var.getName()));
 			}
-			int i = numInheritedFields + sym.getInsertionOrderNumber();
-			return Compiler.push_field(i);
+		} else{
+			return Compiler.push_global(getLiteralIndex(id));
 		}
-		else if ( sym!=null && sym.getScope() instanceof STBlock) { // arg or local for block or method
-			STBlock methodScope = (STBlock)sym.getScope();
-			int s = ((STBlock)scope).getRelativeScopeCount(id);
-			int lit = methodScope.getLocalIndex(id);
-			return Compiler.push_local(s, lit);
-		}
-		else {// must be class or global object; bind late so just use literal
-			int lit = getLiteralIndex(id);
-			return Compiler.push_global(lit);
-		}
+		return Code.None;
 	}
+
 	public void pushScope(Scope scope) {
 		currentScope = scope;
 	}
