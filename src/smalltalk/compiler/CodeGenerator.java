@@ -249,7 +249,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	@Override
 	public Code visitMessageExpression(SmalltalkParser.MessageExpressionContext ctx) {
 		Code code = visit(ctx.keywordExpression());
-		//Code code = visitChildren(ctx);
 		return code;
 	}
 
@@ -319,10 +318,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 			code = visitChildren(ctx);
 		}
 		return code;
-//		Code reciverCode = visit(ctx.recv);
-//		return sendKeywordMsg(ctx.recv, reciverCode, ctx.binaryExpression(),ctx.KEYWORD());
 	}
-
 
 	@Override
 	public Code visitPrimary(SmalltalkParser.PrimaryContext ctx) {
